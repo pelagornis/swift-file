@@ -1,26 +1,26 @@
 #  Getting started
 
-Learn how to use PLFile.
+Learn how to use File.
 
 ## Installation
-PLFile was deployed as Swift Package Manager. Package to install in a project. Add as a dependent item within the swift manifest.
+File was deployed as Swift Package Manager. Package to install in a project. Add as a dependent item within the swift manifest.
 ```swift
 let package = Package(
     ...
     dependencies: [
-        .package(url: "https://github.com/pelagornis/plfile.git", from: "1.0.6")
+        .package(url: "https://github.com/pelagornis/swift-file", from: "1.1.0")
     ],
     ...
 )
 ```
-Then import the PLFile from thr location you want to use.
+Then import the File from thr location you want to use.
 
 ```swift
 import File
 ```
 
-## Using PLFile
-PLFile offers the most commonly used Bash and ZSH, which in addition helps users scale easily.
+## Using File
+File offers the most commonly used Bash and ZSH, which in addition helps users scale easily.
 
 Path Setting.
 
