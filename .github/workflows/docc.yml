@@ -50,7 +50,7 @@ jobs:
                 --target File \
                 --output-path docs-out/"$tag" \
                 --transform-for-static-hosting \
-                --hosting-base-path /plfile/"$tag" \
+                --hosting-base-path /swift-file/"$tag" \
                     && echo "✅ Documentation generated for "$tag" release." \
                     || echo "⚠️ Documentation skipped for "$tag".";
             fi;
