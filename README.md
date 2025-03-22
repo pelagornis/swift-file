@@ -1,4 +1,4 @@
-# PLFile
+# File
 ![Official](https://img.shields.io/badge/project-official-green.svg?colorA=303033&colorB=226af6&label=Pelagornis)
 ![SPM](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)
 ![Swift](https://img.shields.io/badge/Swift-5.7-orange.svg)
@@ -8,17 +8,17 @@
 📁 Pelagornis File Management Library
 
 ## Installation
-PLFile was deployed as Swift Package Manager. Package to install in a project. Add as a dependent item within the swift manifest.
+File was deployed as Swift Package Manager. Package to install in a project. Add as a dependent item within the swift manifest.
 ```swift
 let package = Package(
     ...
     dependencies: [
-        .package(url: "https://github.com/pelagornis/plfile.git", from: "1.0.8")
+        .package(url: "https://github.com/pelagornis/swift-file", from: "1.1.0")
     ],
     ...
 )
 ```
-Then import the PLFile from thr location you want to use.
+Then import the File from thr location you want to use.
 
 ```swift
 import File
@@ -26,7 +26,7 @@ import File
 
 ## Documentation
 The documentation for releases and ``main`` are available here:
-- [``main``](https://pelagornis.github.io/plfile/main/documentation/file)
+- [``main``](https://pelagornis.github.io/swift-file/main/documentation/file)
 
 
 ## Using
@@ -62,4 +62,4 @@ try? folder.delete()
 ```
 
 ## License
-**PLFile** is under MIT license. See the [LICENSE](LICENSE) file for more info.
+**swift-file** is under MIT license. See the [LICENSE](LICENSE) file for more info.
