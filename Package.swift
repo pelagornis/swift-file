@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "plfile",
+    name: "swift-file",
     platforms: [
         .iOS(.v13), 
         .macOS(.v10_15), 
