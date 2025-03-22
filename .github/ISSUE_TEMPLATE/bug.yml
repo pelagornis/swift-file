@@ -1,5 +1,5 @@
 name: Bug Report
-description: Found a bug in PLFile? Create a report!
+description: Found a bug in File? Create a report!
 title: "Insert title here"
 labels: ["type:bug"]
 body:
