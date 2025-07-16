@@ -16,10 +16,16 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.3")
+        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.3"),
+        .package(url: "https://github.com/apple/swift-log", from: "1.6.3")
     ],
     targets: [
-        .target(name: "File"),
+        .target(
+            name: "File",
+            dependencies: [
+                .product(name: "Logging", package: "swift-log")
+            ]
+        ),
         .testTarget(
             name: "FileTests",
             dependencies: ["File"]
