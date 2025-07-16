@@ -1,4 +1,7 @@
 import Foundation
+import Logging
+
+private let logger = Logger(label: "FileError")
 
 /// Error can be thrown by PLFile
 public enum FileError: Error {

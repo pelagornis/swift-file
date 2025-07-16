@@ -1,4 +1,7 @@
 import Foundation
+import Logging
+
+private let logger = Logger(label: "File")
 
 /// File functionality in PLFile
 public struct File: FileSystem {
@@ -63,6 +66,14 @@ public extension File {
         } catch {
             throw FileError.readFailed(path: store.path, error: error)
         }
+    }
+}
+
+// MARK: - Existence
+public extension File {
+    /// Checks if the file actually exists in the file system.
+    func exists() -> Bool {
+        return FileManager.default.fileExists(atPath: store.path.rawValue)
     }
 }
 

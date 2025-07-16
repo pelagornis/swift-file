@@ -1,4 +1,6 @@
 import Foundation
+import Logging
+private let logger = Logger(label: "Path")
 
 /// Manage the path of the PLFile.
 public struct Path {

@@ -1,4 +1,7 @@
 import Foundation
+import Logging
+
+private let logger = Logger(label: "Child")
 
 // MARK: - Child
 public extension Folder {

@@ -1,4 +1,7 @@
 import Foundation
+import Logging
+
+private let logger = Logger(label: "Folder")
 
 /// Folder functionality in PLFile
 public struct Folder: FileSystem {
@@ -76,5 +79,38 @@ extension Folder {
         subfolders.includeStatus = includingStatus
         try files.delete()
         try subfolders.delete()
+    }
+}
+
+// MARK: - Existence
+public extension Folder {
+    /// Checks if the folder actually exists in the file system.
+    func exists() -> Bool {
+        var isDir: ObjCBool = false
+        let exists = FileManager.default.fileExists(atPath: store.path.rawValue, isDirectory: &isDir)
+        return exists && isDir.boolValue
+    }
+}
+
+// MARK: - All Files/Folders
+public extension Folder {
+    /// Returns all files in the folder (supports recursive search).
+    func allFiles(recursive: Bool = false) -> [File] {
+        var result: [File] = []
+        let sequence = recursive ? self.files.recursiveStatus : self.files
+        for file in sequence {
+            result.append(file)
+        }
+        return result
+    }
+
+    /// Returns all subfolders in the folder (supports recursive search).
+    func allFolders(recursive: Bool = false) -> [Folder] {
+        var result: [Folder] = []
+        let sequence = recursive ? self.subfolders.recursiveStatus : self.subfolders
+        for folder in sequence {
+            result.append(folder)
+        }
+        return result
     }
 }

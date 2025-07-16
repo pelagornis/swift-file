@@ -1,4 +1,7 @@
 import Foundation
+import Logging
+
+private let logger = Logger(label: "FileSystem")
 
 /// Can use the functions of the file system as a key feature of PLFile.
 public protocol FileSystem: Equatable, CustomStringConvertible {
