@@ -9,7 +9,9 @@
 📁 **File** is a powerful and intuitive file management library for Swift. It simplifies file and folder operations, providing a consistent API across different platforms. File is designed to make working with the file system a breeze, whether you're reading, writing, creating, or deleting files and folders.
 
 ## Installation
+
 File was deployed as Swift Package Manager. Package to install in a project. Add as a dependent item within the swift manifest.
+
 ```swift
 let package = Package(
     ...
@@ -19,6 +21,7 @@ let package = Package(
     ...
 )
 ```
+
 Then import the File from thr location you want to use.
 
 ```swift
@@ -26,18 +29,21 @@ import File
 ```
 
 ## Documentation
-The documentation for releases and ``main`` are available here:
-- [``main``](https://pelagornis.github.io/swift-file/main/documentation/file)
 
+The documentation for releases and `main` are available here:
+
+- [`main`](https://pelagornis.github.io/swift-file/main/documentation/file)
 
 ## Using
 
 Path Setting.
+
 ```swift
 let path = Path("/Users/ji-hoonahn/Desktop/") // example
 ```
 
 Easy access path.
+
 ```swift
 Path.current
 Path.root
@@ -301,7 +307,74 @@ let file = try folder.createFile(at: "example.txt")
 try file.delete()
 ```
 
+### New Features
+
+#### Existence Check
+
+Check if a file or folder exists:
+
+```swift
+let file = try folder.createFile(at: "existTest.txt")
+if file.exists() {
+    print("File exists!")
+}
+if folder.exists() {
+    print("Folder exists!")
+}
+```
+
+#### List All Files and Folders (Recursive)
+
+Get all files and folders recursively:
+
+```swift
+let allFiles = folder.allFiles(recursive: true)
+let allFolders = folder.allFolders(recursive: true)
+```
+
+#### Symbolic Link
+
+Create and check symbolic links:
+
+```swift
+let target = try folder.createFile(at: "target.txt")
+let linkPath = folder.store.path.rawValue + "link.txt"
+let linkStore = try Store<File>(path: Path(linkPath), fileManager: .default)
+try linkStore.createSymbolicLink(to: target.store.path)
+if linkStore.isSymbolicLink() {
+    print("This is a symbolic link!")
+    print("Destination: \(linkStore.destinationOfSymbolicLink()?.rawValue ?? "")")
+}
+```
+
+#### File/Folder Permissions
+
+Get and set POSIX permissions:
+
+```swift
+let file = try folder.createFile(at: "perm.txt")
+let originalPerm = file.store.getPermissions()
+try file.store.setPermissions(0o600)
+let newPerm = file.store.getPermissions()
+print("New permissions: \(String(newPerm ?? 0, radix: 8))")
+```
+
+#### File/Folder Change Watch (macOS/iOS)
+
+Watch for changes to a file or folder:
+
+```swift
+#if os(macOS) || os(iOS)
+let file = try folder.createFile(at: "watch.txt")
+let source = file.store.watch {
+    print("File changed!")
+}
+try file.write("changed!")
+// Don't forget to cancel the source when done:
+if let src = source as? DispatchSourceFileSystemObject { src.cancel() }
+#endif
+```
 
 ## License
-**swift-file** is under MIT license. See the [LICENSE](LICENSE) file for more info.
 
+**swift-file** is under MIT license. See the [LICENSE](LICENSE) file for more info.
