@@ -1,4 +1,5 @@
 import XCTest
+import Logging
 @testable import File
 
 final class FileTests: XCTestCase {
@@ -68,5 +69,46 @@ final class FileTests: XCTestCase {
 
     func testingPathLibrary() {
         XCTAssertNotEqual(Path.library, Path())
+    }
+
+    func testFileAndFolderExistence() {
+        let file = try! folder.createFile(at: "existTest.txt")
+        XCTAssertTrue(file.exists())
+        XCTAssertTrue(folder.exists())
+        try! file.delete()
+        XCTAssertFalse(file.exists())
+    }
+
+    func testSymbolicLink() {
+        let target = try! folder.createFile(at: "target.txt")
+        let linkPath = folder.store.path.rawValue + "link.txt"
+        let linkStore = try! Store<File>(path: Path(linkPath), fileManager: .default)
+        try! linkStore.createSymbolicLink(to: target.store.path)
+        XCTAssertTrue(linkStore.isSymbolicLink())
+        XCTAssertEqual(linkStore.destinationOfSymbolicLink()?.rawValue, target.store.path.rawValue)
+    }
+
+    func testPermissions() {
+        let file = try! folder.createFile(at: "perm.txt")
+        let originalPerm = file.store.getPermissions()
+        try! file.store.setPermissions(0o600)
+        let newPerm = file.store.getPermissions()
+        XCTAssertEqual(newPerm, 0o600)
+        if let orig = originalPerm { try? file.store.setPermissions(orig) }
+    }
+
+    func testWatch() {
+        let file = try! folder.createFile(at: "watch.txt")
+        let exp = expectation(description: "File change detected")
+        #if os(macOS) || os(iOS)
+        let source = file.store.watch {
+            exp.fulfill()
+        }
+        try! file.write("changed!")
+        wait(for: [exp], timeout: 2.0)
+        if let src = source as? DispatchSourceFileSystemObject { src.cancel() }
+        #else
+        XCTAssertNil(file.store.watch { })
+        #endif
     }
 }
