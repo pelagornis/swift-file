@@ -111,4 +111,82 @@ final class FileTests: XCTestCase {
         XCTAssertNil(file.store.watch { })
         #endif
     }
+    
+    func testAllFilesAndFolders() {
+        // Create a directory structure for testing
+        // .plfileTest/
+        //   - file1.txt
+        //   - subfolder1/
+        //     - file2.txt
+        //     - subfolder2/
+        //       - file3.txt
+        
+        let file1 = try! folder.createFile(at: "file1.txt")
+        let subfolder1 = try! folder.createSubfolder(at: "subfolder1")
+        let file2 = try! subfolder1.createFile(at: "file2.txt")
+        let subfolder2 = try! subfolder1.createSubfolder(at: "subfolder2")
+        let file3 = try! subfolder2.createFile(at: "file3.txt")
+        
+        // Test non-recursive allFiles
+        let files = folder.allFiles()
+        XCTAssertEqual(files.count, 1)
+        XCTAssertEqual(files.first?.name, "file1.txt")
+        
+        // Test recursive allFiles
+        let allFilesRecursive = folder.allFiles(recursive: true)
+        print("[DEBUG] allFilesRecursive: ", allFilesRecursive.map { $0.name })
+        XCTAssertEqual(allFilesRecursive.count, 3)
+        let allFileNames = allFilesRecursive.map { $0.name }.sorted()
+        XCTAssertEqual(allFileNames, ["file1.txt", "file2.txt", "file3.txt"])
+        
+        // Test non-recursive allFolders
+        let folders = folder.allFolders()
+        XCTAssertEqual(folders.count, 1)
+        XCTAssertEqual(folders.first?.name, "subfolder1")
+        
+        // Test recursive allFolders
+        let allFoldersRecursive = folder.allFolders(recursive: true)
+        XCTAssertEqual(allFoldersRecursive.count, 2)
+        let allFolderNames = allFoldersRecursive.map { $0.name }.sorted()
+        XCTAssertEqual(allFolderNames, ["subfolder1", "subfolder2"])
+        
+        // Clean up created files and folders
+        try! file1.delete()
+        try! file2.delete()
+        try! file3.delete()
+        try! subfolder1.delete()
+    }
+
+    func testHiddenFiles() {
+        // Create hidden and non-hidden files and folders
+        let file = try! folder.createFile(at: "file.txt")
+        let hiddenFile = try! folder.createFile(at: ".hidden.txt")
+        let subfolder = try! folder.createSubfolder(at: "sub")
+        let hiddenSubfolder = try! folder.createSubfolder(at: ".hiddenSub")
+
+        // Test that hidden files are excluded by default
+        XCTAssertEqual(folder.allFiles().count, 1)
+        XCTAssertEqual(folder.allFiles().first?.name, "file.txt")
+        XCTAssertEqual(folder.allFolders().count, 1)
+        XCTAssertEqual(folder.allFolders().first?.name, "sub")
+
+        // Test that hidden files are included when requested
+        XCTAssertEqual(folder.allFiles(includeHidden: true).count, 2)
+        XCTAssertEqual(folder.allFolders(includeHidden: true).count, 2)
+
+        // Test emptying the folder
+        try! folder.empty()
+        XCTAssertEqual(folder.allFiles(includeHidden: true).count, 1) // .hidden.txt should still be there
+        XCTAssertEqual(folder.allFolders(includeHidden: true).count, 1) // .hiddenSub should still be there
+
+        try! folder.empty(includingHidden: true)
+        XCTAssertEqual(folder.allFiles(includeHidden: true).count, 0)
+        XCTAssertEqual(folder.allFolders(includeHidden: true).count, 0)
+        
+        // Cleanup
+        try? file.delete()
+        try? hiddenFile.delete()
+        try? subfolder.delete()
+        try? hiddenSubfolder.delete()
+    }
 }
