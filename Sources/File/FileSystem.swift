@@ -33,9 +33,10 @@ extension FileSystem {
 
     /// File Extension in File System
     public var `extension`: String? {
-        let components = name.split(separator: ".")
-        guard components.count > 1 else { return nil }
-        return String(components.last!)
+        guard let dotIndex = name.lastIndex(of: "."),
+              dotIndex != name.startIndex else { return nil }
+        let ext = name[name.index(after: dotIndex)...]
+        return String(ext)
     }
 
     /// The date when the item at this FileSystem was created
