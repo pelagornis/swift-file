@@ -72,11 +72,11 @@ extension Folder {
     }
 
     /// Empty folder, delete all of Contents
-    public func empty(includingStatus: Bool = false) throws {
+    public func empty(includingHidden: Bool = false) throws {
         var files = self.files
         var subfolders = self.subfolders
-        files.includeStatus = includingStatus
-        subfolders.includeStatus = includingStatus
+        files.includeStatus = includingHidden
+        subfolders.includeStatus = includingHidden
         try files.delete()
         try subfolders.delete()
     }
@@ -95,9 +95,15 @@ public extension Folder {
 // MARK: - All Files/Folders
 public extension Folder {
     /// Returns all files in the folder (supports recursive search).
-    func allFiles(recursive: Bool = false) -> [File] {
+    func allFiles(recursive: Bool = false, includeHidden: Bool = false) -> [File] {
         var result: [File] = []
-        let sequence = recursive ? self.files.recursiveStatus : self.files
+        var sequence = self.files
+        if recursive {
+            sequence = sequence.recursiveStatus
+        }
+        if includeHidden {
+            sequence = sequence.includingStatus
+        }
         for file in sequence {
             result.append(file)
         }
@@ -105,9 +111,15 @@ public extension Folder {
     }
 
     /// Returns all subfolders in the folder (supports recursive search).
-    func allFolders(recursive: Bool = false) -> [Folder] {
+    func allFolders(recursive: Bool = false, includeHidden: Bool = false) -> [Folder] {
         var result: [Folder] = []
-        let sequence = recursive ? self.subfolders.recursiveStatus : self.subfolders
+        var sequence = self.subfolders
+        if recursive {
+            sequence = sequence.recursiveStatus
+        }
+        if includeHidden {
+            sequence = sequence.includingStatus
+        }
         for folder in sequence {
             result.append(folder)
         }
