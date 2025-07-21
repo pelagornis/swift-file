@@ -4,7 +4,7 @@ import Logging
 
 /// A common part of the File and Folder functionality that allows you to set up the required paths and FileManager that the file system should use.
 public final class Store<fileSystem: FileSystem> {
-    var path: Path
+    public var path: Path
     private let fileManager: FileManager
 
     init(path: Path, fileManager: FileManager) throws {
