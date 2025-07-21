@@ -137,7 +137,7 @@ final class FileTests: XCTestCase {
         XCTAssertEqual(allFilesRecursive.count, 3)
         let allFileNames = allFilesRecursive.map { $0.name }.sorted()
         XCTAssertEqual(allFileNames, ["file1.txt", "file2.txt", "file3.txt"])
-        
+
         // Test non-recursive allFolders
         let folders = folder.allFolders()
         XCTAssertEqual(folders.count, 1)
