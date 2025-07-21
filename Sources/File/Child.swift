@@ -102,22 +102,50 @@ extension Folder.ChildIterator: IteratorProtocol {
         }
 
         let childPath = folder.store.path.rawValue + name.removeSafePrefix("/")
-        let childStore = try? Store<Child> (path: Path(childPath), fileManager: fileManager)
-        let child = childStore as? Child
         
-        if recursive {
-            let childFolder = (child as? Folder) ?? (try? Folder(store: Store(path: Path(childPath), fileManager: fileManager)))
-            
-            if let childFolder = childFolder {
-                let iteratorItem = Folder.ChildIterator<Child> (
-                    folder: childFolder,
-                    fileManager: fileManager,
-                    recursive: true,
-                    includeStatus: includeStatus,
-                    reversingTopLevel: false
-                )
-                itemIterators.append(iteratorItem)
+        var isDirectory: ObjCBool = false
+        guard fileManager.fileExists(atPath: childPath, isDirectory: &isDirectory) else {
+            return next()
+        }
+
+        let child: Child?
+        if Child.type == .folder {
+            guard isDirectory.boolValue else { return next() }
+            let store = try? Store<Folder>(path: Path(childPath), fileManager: fileManager)
+            child = Folder(store: store!) as? Child
+        } else if Child.type == .file {
+            guard !isDirectory.boolValue else {
+                // 폴더를 만났을 때, 재귀적으로 그 폴더의 파일을 탐색
+                if recursive {
+                    if let store = try? Store<Folder>(path: Path(childPath), fileManager: fileManager) {
+                        let folder = Folder(store: store)
+                        let iteratorItem = Folder.ChildIterator<Child>(
+                            folder: folder,
+                            fileManager: fileManager,
+                            recursive: true,
+                            includeStatus: includeStatus,
+                            reversingTopLevel: false
+                        )
+                        itemIterators.append(iteratorItem)
+                    }
+                }
+                return next()
             }
+            let store = try? Store<File>(path: Path(childPath), fileManager: fileManager)
+            child = File(store: store!) as? Child
+        } else {
+            child = nil
+        }
+        
+        if recursive, Child.type == .folder, let folder = child as? Folder {
+            let iteratorItem = Folder.ChildIterator<Child>(
+                folder: folder,
+                fileManager: fileManager,
+                recursive: true,
+                includeStatus: includeStatus,
+                reversingTopLevel: false
+            )
+            itemIterators.append(iteratorItem)
         }
 
         return child ?? next()
