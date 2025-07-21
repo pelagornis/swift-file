@@ -188,4 +188,34 @@ final class FileTests: XCTestCase {
         try? subfolder.delete()
         try? hiddenSubfolder.delete()
     }
+
+    func testFileExtensionParsing() {
+        let file1 = try! folder.createFile(at: "test.txt")
+        XCTAssertEqual(file1.extension, "txt")
+
+        let file2 = try! folder.createFile(at: "archive.tar.gz")
+        XCTAssertEqual(file2.extension, "gz")
+
+        let file3 = try! folder.createFile(at: "noext")
+        XCTAssertNil(file3.extension)
+
+        let file4 = try! folder.createFile(at: ".hiddenfile")
+        XCTAssertNil(file4.extension)
+
+        let file5 = try! folder.createFile(at: "file.")
+        XCTAssertEqual(file5.extension, "")
+
+        // Clean up
+        try! file1.delete()
+        try! file2.delete()
+        try! file3.delete()
+        try! file4.delete()
+        try! file5.delete()
+    }
+
+    func testXcodeprojExtension() {
+        let file = try! folder.createFile(at: "MyApp.xcodeproj")
+        XCTAssertEqual(file.extension, "xcodeproj")
+        try! file.delete()
+    }
 }
