@@ -16,8 +16,8 @@ concurrency:
 
 jobs:
     macos:
-        name: macos 15
-        runs-on: macos-15
+        name: macos 15.5
+        runs-on: macos-15.5
         strategy:
           matrix:
             config:
@@ -27,7 +27,7 @@ jobs:
             - name: Set Xcode version
               uses: maxim-lobanov/setup-xcode@v1
               with:
-                xcode-version: '16.0'
+                xcode-version: '26.0'
             - name: Checkout Package
               uses: actions/checkout@v4
               with:
