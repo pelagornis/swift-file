@@ -16,8 +16,8 @@ concurrency:
 
 jobs:
     macos:
-        name: macos 15.5
-        runs-on: macos-15.5
+        name: macos 15
+        runs-on: macos-15
         strategy:
           matrix:
             config:
