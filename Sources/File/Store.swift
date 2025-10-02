@@ -3,7 +3,7 @@ import Dispatch
 import Logging
 
 /// A common part of the File and Folder functionality that allows you to set up the required paths and FileManager that the file system should use.
-public final class Store<fileSystem: FileSystem> {
+public final class Store<fileSystem: FileSystem>: @unchecked Sendable {
     public var path: Path
     private let fileManager: FileManager
 
@@ -233,7 +233,7 @@ public extension Store {
     ///   - eventHandler: Called when a change is detected.
     /// - Returns: A DispatchSourceFileSystemObject? (macOS, iOS), or nil if not supported. Uses swift-log for logging.
     @discardableResult
-    func watch(eventHandler: @escaping () -> Void) -> Any? {
+    func watch(eventHandler: @escaping @Sendable () -> Void) -> Any? {
 #if os(macOS) || os(iOS)
         let fd = open(path.rawValue, O_EVTONLY)
         guard fd != -1 else { return nil }

@@ -43,9 +43,15 @@ public extension File {
     func append(_ data: Data) throws {
         do {
             let handler = try FileHandle(forWritingTo: url)
-            _ = handler.seekToEndFactory()
-            handler.writeFactory(data)
-            handler.closeFileFactory()
+            if #available(iOS 13.4, macOS 10.15.4, tvOS 13.4, watchOS 6.2, visionOS 1.0, *) {
+                _ = handler.seekToEndFactory()
+                handler.writeFactory(data)
+                handler.closeFileFactory()
+            } else {
+                _ = handler.seekToEndOfFile()
+                handler.write(data)
+                handler.closeFile()
+            }
         } catch {
             throw FileError.writeFailed(path: store.path, error: error)
         }

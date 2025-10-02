@@ -4,7 +4,7 @@ import Logging
 private let logger = Logger(label: "FileError")
 
 /// Error can be thrown by PLFile
-public enum FileError: Error {
+public enum FileError: Error, Sendable {
     /// File Create Error
     case fileCreateError(path: Path)
     /// Verify that file path is empty.

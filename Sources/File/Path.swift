@@ -3,7 +3,7 @@ import Logging
 private let logger = Logger(label: "Path")
 
 /// Manage the path of the PLFile.
-public struct Path {
+public struct Path: Sendable {
     /// Root path.
     public static let root = Path("/")
 
@@ -180,25 +180,27 @@ extension Path {
     /// A subscript that identifies the position of the path.
     public subscript(_ position: Int) -> Path {
         let component = pathComponent
-        if position >= component.count || position < 0 {
+        guard position >= 0 && position < component.count else {
             fatalError("Path index out of range")
-        } else {
-            var result = component.first!
-            for index in 1..<position + 1 {
-                result = Path(result.rawValue + component[index].rawValue)
-            }
-            return result
         }
+        guard let first = component.first else {
+            fatalError("Path component is empty")
+        }
+        var result = first
+        for index in 1...position {
+            result = Path(result.rawValue + component[index].rawValue)
+        }
+        return result
     }
     /// A subscript that identifies the bound out of the path.
     public subscript(_ bounds: Range<Int>) -> Path {
         let component = self.pathComponent
-        if bounds.upperBound >= component.count || bounds.lowerBound < 0 {
+        guard bounds.lowerBound >= 0 && bounds.upperBound <= component.count && bounds.lowerBound < bounds.upperBound else {
             fatalError("Path bounds out of range")
         }
         var result = component[bounds.lowerBound]
-        for index in (bounds.lowerBound + 1)..<(bounds.upperBound) {
-            result  = Path(result.rawValue + component[index].rawValue)
+        for index in (bounds.lowerBound + 1)..<bounds.upperBound {
+            result = Path(result.rawValue + component[index].rawValue)
         }
         return result
     }
