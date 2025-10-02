@@ -95,7 +95,7 @@ extension FileError: CustomDebugStringConvertible {
     /// Representation of instance, suitable for debugging
     public var debugDescription: String {
         guard let error = error else {
-            return self.debugDescription
+            return self.description
         }
         return self.description + ":) \(error)"
     }
