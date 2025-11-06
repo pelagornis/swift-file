@@ -218,4 +218,143 @@ final class FileTests: XCTestCase {
         XCTAssertEqual(file.extension, "xcodeproj")
         try! file.delete()
     }
+    
+    func testPathConcatenation() {
+        // Basic path concatenation
+        let path1 = Path("Desktop")
+        let path2 = Path("AA")
+        let combined = path1 + path2
+        XCTAssertEqual(combined.rawValue, "Desktop/AA")
+        
+        // Multiple path concatenation
+        let path3 = Path("Desktop") + Path("AA") + Path("BB")
+        XCTAssertEqual(path3.rawValue, "Desktop/AA/BB")
+        
+        // Absolute path handling
+        let absolutePath = Path("/Users")
+        let relativePath = Path("Desktop")
+        let combined2 = absolutePath + relativePath
+        XCTAssertEqual(combined2.rawValue, "/Users/Desktop")
+        
+        // If rhs is absolute, it should override
+        let combined3 = Path("Desktop") + Path("/Users")
+        XCTAssertEqual(combined3.rawValue, "/Users")
+        
+        // Empty path handling
+        let emptyPath = Path("")
+        let result1 = emptyPath + Path("Desktop")
+        XCTAssertEqual(result1.rawValue, "Desktop")
+        
+        let result2 = Path("Desktop") + emptyPath
+        XCTAssertEqual(result2.rawValue, "Desktop")
+    }
+    
+    func testPathProperties() {
+        // Test lastComponent
+        XCTAssertEqual(Path("Desktop/file.txt").lastComponent, "file.txt")
+        XCTAssertEqual(Path("Desktop/AA").lastComponent, "AA")
+        XCTAssertEqual(Path("/Users/john").lastComponent, "john")
+        
+        // Test extension
+        XCTAssertEqual(Path("file.txt").extension, "txt")
+        XCTAssertEqual(Path("Desktop/file.swift").extension, "swift")
+        XCTAssertNil(Path("file").extension)
+        XCTAssertNil(Path("Desktop/folder").extension)
+        
+        // Test stem
+        XCTAssertEqual(Path("file.txt").stem, "file")
+        XCTAssertEqual(Path("Desktop/file.swift").stem, "file")
+        XCTAssertEqual(Path("file").stem, "file")
+        
+        // Test isAbsolute and isRelative
+        XCTAssertTrue(Path("/Users").isAbsolute)
+        XCTAssertFalse(Path("/Users").isRelative)
+        XCTAssertFalse(Path("Desktop").isAbsolute)
+        XCTAssertTrue(Path("Desktop").isRelative)
+        
+        // Test depth - be careful with pathComponent which may have edge cases
+        let desktopPath = Path("Desktop")
+        let components = desktopPath.pathComponent
+        XCTAssertEqual(desktopPath.depth, components.count)
+        
+        let desktopAAPath = Path("Desktop/AA")
+        XCTAssertEqual(desktopAAPath.depth, desktopAAPath.pathComponent.count)
+        
+        let desktopAABBPath = Path("Desktop/AA/BB")
+        XCTAssertEqual(desktopAABBPath.depth, desktopAABBPath.pathComponent.count)
+        
+        // Test isEmpty
+        XCTAssertTrue(Path("").isEmpty)
+        XCTAssertTrue(Path(".").isEmpty)
+        XCTAssertFalse(Path("Desktop").isEmpty)
+    }
+    
+    func testPathManipulation() {
+        // Test appending(String)
+        let path1 = Path("Desktop").appending("AA")
+        XCTAssertEqual(path1.rawValue, "Desktop/AA")
+        
+        // Test appending(Path)
+        let path2 = Path("Desktop").appending(Path("AA"))
+        XCTAssertEqual(path2.rawValue, "Desktop/AA")
+        
+        // Test removingLastComponent
+        let path3 = Path("Desktop/AA/BB").removingLastComponent()
+        XCTAssertEqual(path3.rawValue, "Desktop/AA")
+        let path4 = Path("Desktop").removingLastComponent()
+        XCTAssertEqual(path4.rawValue, ".")
+        
+        // Test replacingExtension
+        let path5 = Path("file.txt").replacingExtension("swift")
+        XCTAssertEqual(path5.rawValue, "file.swift")
+        let path6 = Path("Desktop/file.txt").replacingExtension("md")
+        XCTAssertEqual(path6.rawValue, "Desktop/file.md")
+        let path7 = Path("file.txt").replacingExtension("")
+        XCTAssertEqual(path7.rawValue, "file")
+    }
+    
+    func testPathRelationships() {
+        // Test isParent
+        let parent = Path("/Users/john")
+        let child = Path("/Users/john/Desktop")
+        XCTAssertTrue(parent.isParent(of: child))
+        XCTAssertFalse(child.isParent(of: parent))
+        
+        // Test isChild
+        XCTAssertTrue(child.isChild(of: parent))
+        XCTAssertFalse(parent.isChild(of: child))
+        
+        // Test commonPrefix
+        let path1 = Path("/Users/john/Desktop")
+        let path2 = Path("/Users/john/Documents")
+        let common = path1.commonPrefix(with: path2)
+        XCTAssertNotNil(common)
+        XCTAssertEqual(common?.rawValue, "/Users/john")
+        
+        let path3 = Path("/Users/john/A")
+        let path4 = Path("/Users/john/B")
+        let common2 = path3.commonPrefix(with: path4)
+        XCTAssertNotNil(common2)
+        XCTAssertEqual(common2?.rawValue, "/Users/john")
+    }
+    
+    func testRelativePath() {
+        // Test relative path calculation
+        let base = Path("/Users/john")
+        let target = Path("/Users/john/Desktop")
+        let relative = base.relative(to: target)
+        XCTAssertNotNil(relative)
+        XCTAssertEqual(relative?.rawValue, "Desktop")
+        
+        let base2 = Path("/Users/john/Desktop")
+        let target2 = Path("/Users/john/Documents")
+        let relative2 = base2.relative(to: target2)
+        XCTAssertNotNil(relative2)
+        XCTAssertEqual(relative2?.rawValue, "../Documents")
+        
+        // Same path should return "."
+        let same = Path("/Users/john").relative(to: Path("/Users/john"))
+        XCTAssertNotNil(same)
+        XCTAssertEqual(same?.rawValue, ".")
+    }
 }
