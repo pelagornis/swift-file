@@ -2,7 +2,7 @@
 
 ![Official](https://badge.pelagornis.com/official.svg)
 ![SPM](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)
-![Swift](https://img.shields.io/badge/Swift-6.1-orange.svg)
+![Swift](https://img.shields.io/badge/Swift-6.2-orange.svg)
 [![License](https://img.shields.io/github/license/pelagornis/swift-file)](https://github.com/pelagornis/swift-file/blob/main/LICENSE)
 ![Platform](https://img.shields.io/badge/platforms-iOS%2013.0%7C%20tvOS%2013.0%7C%20macOS%2010.15%7C%20watchOS%206.0-red.svg)
 
